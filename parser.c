@@ -8,6 +8,7 @@
 #include "draw.h"
 #include "matrix.h"
 #include "parser.h"
+#include "stack.h"
 
 
 /*======== void parse_file () ==========
@@ -67,7 +68,8 @@ for PI)
 void parse_file ( char * filename, 
                   struct matrix * transform, 
                   struct matrix * edges,
-                  screen s) {
+                  screen s
+		  ) {
 
   FILE *f;
   char line[255];
@@ -77,6 +79,8 @@ void parse_file ( char * filename,
   c.red = 0;
   c.green = 0;
   c.blue = 0;
+
+  struct stack *stacks = new_stack();
   
   if ( strcmp(filename, "stdin") == 0 ) 
     f = stdin;
@@ -98,8 +102,7 @@ void parse_file ( char * filename,
     double step = 0.01;
 
     if ( strncmp(line, "box", strlen(line)) == 0 ) {
-      fgets(line, sizeof(line), f);
-      //printf("BOX\t%s", line);
+      fgets(line, sizeof(line), f);      //printf("BOX\t%s", line);
 
       sscanf(line, "%lf %lf %lf %lf %lf %lf",
 	     xvals, yvals, zvals,
@@ -243,6 +246,14 @@ void parse_file ( char * filename,
       draw_lines(edges, s, c);
       save_extension(s, line);
     }//end save
+
+    else if (strncmp(line, "push", strlen(line)) == 0) {
+      push(stacks);
+    }
+
+    else if (strncmp(line, "pop", strlen(line)) == 0) {
+      pop(stacks);
+    }
     
   }
 }
